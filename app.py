@@ -41,7 +41,7 @@ BASE_TEMPLATE = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Raham Restaurant</title>
+  <title>Aryan Restaurant</title>
   <style>
     :root{
       --bg: #0f1724;
