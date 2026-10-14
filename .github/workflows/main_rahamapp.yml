@@ -1,5 +1,5 @@
 ```yaml
-name: Build and deploy Python app to Azure Web App - rahamapp
+name: Build and deploy Python app to Azure Web App - aryanapk
 
 on:
   push:
@@ -83,6 +83,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: rahamapp
+          app-name: aryanapk
           package: app
 ```
