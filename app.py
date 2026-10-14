@@ -60,7 +60,7 @@ BASE_TEMPLATE = """<!doctype html>
     .container{max-width:1100px;margin:32px auto;padding:28px}
     header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
     .brand{display:flex;gap:14px;align-items:center}
-    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb399);display:flex;align-items:center;justify-content:center;color:#0b1220;font-weight:800;font-size:20px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb399);display:flex;align-items:center;justify-content:center;color:#0b1220;font-weight:800;fo[...]
     h1{margin:0;font-size:20px}
     p.lead{margin:0;color:var(--muted)}
 
@@ -262,5 +262,6 @@ def api_reserve():
 
 
 if __name__ == '__main__':
-    # Keep the same host/port as before so deployment settings remain compatible
-    app.run(host='0.0.0.0', port=5000)
+    # Use PORT env var when present (Azure sets PORT or webserver may use 8000). Default to 5000 for local dev.
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
