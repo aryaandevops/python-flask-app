@@ -7,7 +7,13 @@ def client():
     with app.test_client() as client:
         yield client
 
-def test_health_check(client):
+def test_health(client):
     rv = client.get('/health')
     assert rv.status_code == 200
-    assert b'healthy' in rv.data
+    data = rv.get_json()
+    assert data['status'] == 'healthy'
+
+def test_home_page(client):
+    rv = client.get('/')
+    assert rv.status_code == 200
+    assert b'Raham Restaurant' in rv.data
