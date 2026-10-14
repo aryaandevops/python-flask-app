@@ -1,3 +1,4 @@
+```yaml
 name: Build and deploy Python app to Azure Web App - rahamapp
 
 on:
@@ -10,44 +11,45 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-    
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Python version
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install dependencies
         run: |
-          python -m venv antenv
-          source antenv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest
 
       - name: Run tests
         run: |
-          source antenv/bin/activate
           pytest -q
 
-      - name: Upload artifact for deployment
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: python-app
           path: |
-            ./
-            !antenv/
-            !.git/
-            !.github/
+            .
+            !.git/**
+            !.github/**
+            !antenv/**
+            !.venv/**
+            !__pycache__/**
+            !.pytest_cache/**
+          include-hidden-files: true
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
 
     steps:
@@ -57,13 +59,10 @@ jobs:
           name: python-app
           path: app
 
-      - name: Login to Azure
+      - name: Azure login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Configure Azure Web App
         uses: azure/CLI@v2
@@ -72,7 +71,9 @@ jobs:
             az webapp config appsettings set \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
               --name "rahamapp" \
-              --settings WEBSITES_PORT=8000 SCM_DO_BUILD_DURING_DEPLOYMENT=true ENABLE_ORYX_BUILD=true
+              --settings \
+                SCM_DO_BUILD_DURING_DEPLOYMENT=true \
+                ENABLE_ORYX_BUILD=true
 
             az webapp config set \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
@@ -82,5 +83,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "rahamapp"
+          app-name: rahamapp
           package: app
+```
